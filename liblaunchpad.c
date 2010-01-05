@@ -7,7 +7,7 @@ void launchpad_read_callback(struct libusb_transfer *transfer)
     //figure out if we need to read something
     if(transfer->actual_length > 0)
     {
-        dp->callback(transfer->buffer,transfer->actual_length,dp->user_data);
+        dp->callback(transfer->buffer, transfer->actual_length, dp->user_data);
     }
     else if(transfer->status != LIBUSB_TRANSFER_TIMED_OUT &&
             transfer->status != LIBUSB_TRANSFER_COMPLETED)
@@ -33,12 +33,13 @@ void launchpad_read_callback(struct libusb_transfer *transfer)
 void launchpad_write_callback(struct libusb_transfer *transfer)
 {
     struct launchpad_handle *dp = transfer->user_data;
-    if(transfer->status != LIBUSB_TRANSFER_COMPLETED)
+    if(transfer->status != LIBUSB_TRANSFER_TIMED_OUT &&
+       transfer->status != LIBUSB_TRANSFER_COMPLETED)
     {
-        fprintf(stderr,"Writing failed with code %d\n",transfer->status);
+        fprintf(stderr,"Writing failed with code %d\n", transfer->status);
     }
     dp->writing = 0;
-    dp->callback(NULL,0,dp->user_data);
+    dp->callback(NULL, 0, dp->user_data);
 }
 
 struct launchpad_handle* launchpad_register(launchpad_callback e,void* user_data)
@@ -130,12 +131,11 @@ void launchpad_deregister(struct launchpad_handle* dp)
 int launchpad_write(struct launchpad_handle *dp, unsigned char* data, size_t len)
 {
     int retval;
+
     if(dp->writing)
-    {
-        //woah there, buddy
         return 1;
-    }
     dp->writing = 1;
+
     libusb_fill_interrupt_transfer(dp->wtransfer,
                                     dp->device,
                                     USB_LP_INTR_OUT,
@@ -147,7 +147,7 @@ int launchpad_write(struct launchpad_handle *dp, unsigned char* data, size_t len
      retval = libusb_submit_transfer(dp->wtransfer);
      if(retval != 0)
      {
-         printf("Couldn't submit transfer code %d\n",retval);
+         printf("Device Write failed. (Error %d)\n",retval);
          dp->writing = 0;
      }
      return retval;

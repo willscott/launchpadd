@@ -169,7 +169,8 @@ int main(int argc, char *argv[]) {
     signal (SIGINT, leave);
     signal (SIGTERM, leave);
     signal (SIGQUIT, leave);
-  /* Variables */
+    
+    /* Variables */
     int colornumfd,i,maxcon;
     struct pollfd *pfd;
     struct ud userdata;
@@ -189,6 +190,7 @@ int main(int argc, char *argv[]) {
     }
     lhandle = userdata.lh;
 	
+	/* Main Loop */
     while (running) {
         if(launchpad_poll(pfd,colornumfd))
         {
@@ -202,5 +204,8 @@ int main(int argc, char *argv[]) {
         	}
         }
     }
+    
+    /* Cleanup */
+    launchpad_deregister(userdata.lh);
     return 0;
 }
