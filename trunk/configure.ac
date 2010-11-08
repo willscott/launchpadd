@@ -1,0 +1,10 @@
+AC_INIT([launchpadd], [0.1])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_CONFIG_MACRO_DIR([m4])
+AC_PROG_CXX
+AC_PROG_LIBTOOL
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile])
+PKG_CHECK_MODULES([USB], [libusb-1.0 >= 1.0])
+PKG_CHECK_MODULES([ALSA], [alsa >= 1.0.2])
+AC_OUTPUT
