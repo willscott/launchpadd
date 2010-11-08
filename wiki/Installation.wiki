@@ -15,7 +15,13 @@ The other dependency that is worth mentioning is the new version of libusb.  You
 
 = Building =
 
-`make`
+Build the executable via the following three shell commands:
+
+{{{
+$ autoreconf -i
+$ ./configure
+$ make
+}}}
 
 = Running =
 
@@ -25,3 +31,7 @@ start the program with
 you should now be able to see the two midi channels that have been created by running
 `aconnect -i` and `aconnect -o`
 connect the two and verify that lights turn on when you press them.
+
+== Issues? ==
+
+Please send an email to `willscott@gmail.com` if you have problems, and I'll do what I can to help!
