@@ -11,7 +11,7 @@ If you haven't built packages before you need to install gcc, and all the develo
 You'll need alsa and it's development headers to build the midi part.  look for libasound-dev in your package manager.
 
 The other dependency that is worth mentioning is the new version of libusb.  You can grab it in ubuntu by running
-`sudo apt-get install libusb-1.0-dev`
+`sudo apt-get install libusb-1.0-0-dev`
 
 = Building =
 
