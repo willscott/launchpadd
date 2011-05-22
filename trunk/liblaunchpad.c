@@ -11,7 +11,7 @@ void launchpad_read_callback(struct libusb_transfer *transfer)
     else if (transfer->status != LIBUSB_TRANSFER_TIMED_OUT &&
              transfer->status != LIBUSB_TRANSFER_COMPLETED)
     {
-        fprintf(stderr, "Reading failed with code %d\n", transfer->status);
+        dp->errback(dp->user_data);
         return;
     }
     //resend it
@@ -43,6 +43,11 @@ void launchpad_write_callback(struct libusb_transfer *transfer)
     dp->callback(NULL, 0, dp->user_data);
 }
 
+void launchpad_nullerrback(void* data)
+{
+  fprintf(stderr, "Unhandled read error\n");
+}
+
 struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_data)
 {
     struct launchpad_handle *dp;
@@ -64,6 +69,7 @@ struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_dat
         return NULL;
     }
     dp->callback = e;
+    dp->errback = launchpad_nullerrback;
     dp->user_data = user_data;
 
     //find the device
@@ -110,6 +116,11 @@ struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_dat
     }
 
     return dp;
+}
+
+void launchpad_seterrback(struct launchpad_handle* dp, launchpad_errback e)
+{
+  dp->errback = e;
 }
 
 void launchpad_deregister(struct launchpad_handle* dp)

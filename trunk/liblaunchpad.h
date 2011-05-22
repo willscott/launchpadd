@@ -20,6 +20,13 @@
  */
 typedef void(*launchpad_callback)(unsigned char* data, size_t len, void* user_data);
 
+/**
+ * This is the method signature for your error handler
+ * A call will be made on write or read calls you make when no callback
+ * will be called.
+ */
+typedef void(*launchpad_errback)(void* user_data);
+
 /*
  * This is the data that's held in the pointer we return to you.
  * If you're really fancy, you can dynamically change your callback
@@ -29,6 +36,7 @@ typedef void(*launchpad_callback)(unsigned char* data, size_t len, void* user_da
  */
 struct launchpad_handle {
     launchpad_callback callback;
+    launchpad_errback errback;
     struct libusb_device_handle* device;
     struct libusb_transfer* rtransfer;
     struct libusb_transfer* wtransfer;
@@ -43,6 +51,12 @@ struct launchpad_handle {
  * be null if you don't need to pass anything to your callback function
  */
 struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_data);
+
+/*
+ * Set the error handler
+ * It will be called when the launchpad fails a write, or stalls.
+ */
+void launchpad_seterrback(struct launchpad_handle* dp, launchpad_errback e);
 
 /*
  * Call this when you're done with the device.
