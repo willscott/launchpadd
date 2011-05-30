@@ -53,6 +53,7 @@ struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_dat
     struct launchpad_handle *dp;
     unsigned int bufferlen;
     unsigned char* buffer;
+    int retval;
 
     //initialize usb
     if (libusb_init(NULL) != 0)
@@ -79,7 +80,23 @@ struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_dat
         return NULL;
     }
     //claim the device
-    if (libusb_claim_interface(dp->device, 0) != 0)
+    retval = libusb_claim_interface(dp->device, 0);
+    if (retval == LIBUSB_ERROR_BUSY)
+    {
+        retval = libusb_kernel_driver_active(dp->device, 0);
+        if (retval == 1 &&
+            libusb_detach_kernel_driver(dp->device, 0) == 0 &&
+            libusb_claim_interface(dp->device, 0) == 0)
+        {
+            fprintf(stderr, "Launchpad acquired from a kernel driver.\n");
+        }
+        else
+        {
+            fprintf(stderr, "Unable to claim the launchpad from an existing driver\n");
+            return NULL;
+        }
+    }
+    else if (retval != 0)
     {
         fprintf(stderr, "Unable to claim the launchpad\n");
         return NULL;
