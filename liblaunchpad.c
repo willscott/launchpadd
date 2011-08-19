@@ -98,7 +98,7 @@ struct launchpad_handle* launchpad_register(launchpad_callback e, void* user_dat
     }
     else if (retval != 0)
     {
-        fprintf(stderr, "Unable to claim the launchpad\n");
+        fprintf(stderr, "Unable to claim the launchpad (errno %d) \n", retval);
         return NULL;
     }
 
